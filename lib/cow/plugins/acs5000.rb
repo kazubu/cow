@@ -26,6 +26,7 @@ module Cow
         snmp do |s|
           s.walk(OID_DESCRIPTION_LIST) do |x|
             next if x.name.last.zero?
+            next unless (/^[0-9a-f]{2}-[0-9a-f]{2}-[0-9a-f]{2}P[0-9]+$/ =~ x.value.to_s).nil?
             port = x.name.last
             name = x.value.to_s
             tcp_port = snmp { |s| break s.get_value(OID_TCPPORT_LIST + ".#{port}") }
