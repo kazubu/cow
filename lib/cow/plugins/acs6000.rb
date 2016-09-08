@@ -9,17 +9,11 @@ module Cow
     class Port < Cow::Tmpl::Port
     end
 
-    class Server < Cow::Tmpl::Server
+    module Server
       def port(_port)
         return _port if _port.class == Cow::ACS6000::Port
         super
       end
-
-      def connect_command(_port, _user = ENV['USER'])
-        "ssh -l #{_user}:#{port(_port).tcp_port} #{@hostname}"
-      end
-
-      private
 
       def get_ports
         ret = []
@@ -36,6 +30,26 @@ module Cow
         end
 
         ret
+      end
+    end
+
+    module Telnet
+      class Server < Cow::Tmpl::Server
+        include Cow::ACS6000::Server
+
+        def connect_command(_port, _user = ENV['USER'])
+          "telnet #{@hostname} #{port(_port).tcp_port}"
+        end
+      end
+    end
+
+    module SSH
+      class Server < Cow::Tmpl::Server
+        include Cow::ACS6000::Server
+
+        def connect_command(_port, _user = ENV['USER'])
+          "ssh -l #{_user}:#{port(_port).tcp_port} #{@hostname}"
+        end
       end
     end
   end
