@@ -9,23 +9,18 @@ module Cow
     class Port < Cow::Tmpl::Port
     end
 
-    class Server < Cow::Tmpl::Server
+    module Server
       def port(_port)
         return _port if _port.class == Cow::ACS5000::Port
         super
       end
-
-      def connect_command(_port, _user = ENV['USER'])
-        "ssh -l #{_user}:#{port(_port).tcp_port} #{@hostname}"
-      end
-
-      private
 
       def get_ports
         ret = []
         snmp do |s|
           s.walk(OID_DESCRIPTION_LIST) do |x|
             next if x.name.last.zero?
+            next unless (/^[0-9a-f]{2}-[0-9a-f]{2}-[0-9a-f]{2}P[0-9]+$/ =~ x.value.to_s).nil?
             port = x.name.last
             name = x.value.to_s
             tcp_port = snmp { |s| break s.get_value(OID_TCPPORT_LIST + ".#{port}") }
@@ -35,6 +30,26 @@ module Cow
         end
 
         ret
+      end
+    end
+
+    module Telnet
+      class Server < Cow::Tmpl::Server
+        include Cow::ACS5000::Server
+
+        def connect_command(_port, _user = ENV['USER'])
+          "telnet #{@hostname} #{port(_port).tcp_port}"
+        end
+      end
+    end
+
+    module SSH
+      class Server < Cow::Tmpl::Server
+        include Cow::ACS5000::Server
+
+        def connect_command(_port, _user = ENV['USER'])
+          "ssh -l #{_user}:#{port(_port).tcp_port} #{@hostname}"
+        end
       end
     end
   end
