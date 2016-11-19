@@ -3,8 +3,8 @@ require 'snmp'
 
 module Cow
   module ACS5000
-    OID_DESCRIPTION_LIST = '1.3.6.1.4.1.10418.15.2.2.6.2.1.1.3'.freeze
-    OID_TCPPORT_LIST = '1.3.6.1.4.1.10418.15.2.2.6.2.1.1.26'.freeze
+    OID_DESCRIPTION_LIST = '1.3.6.1.4.1.2925.8.2.6.2.1.1.3'.freeze
+    OID_TCPPORT_LIST = '1.3.6.1.4.1.2925.8.2.6.2.1.1.26'.freeze
 
     class Port < Cow::Tmpl::Port
     end
