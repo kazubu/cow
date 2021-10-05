@@ -6,8 +6,6 @@ Cow - console server wrapper.
 
 `gem install cow`
 
-`mkdir /var/cache/cow`
-
 `sudo cow add [hostname] [type] [community]`
 
 ## Usage
