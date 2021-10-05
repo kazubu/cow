@@ -40,3 +40,21 @@ tokyo-core01 (ttyd0)
 
 login: 
 ```
+
+## Pico integration with Zsh
+
+In .zshrc:
+```
+function peco-select-console() {
+  BUFFER=$(cow list | \
+           peco --query "$LBUFFER" | \
+           awk 'BEGIN{FS=" "}{print "cow c "$2}')
+  CURSOR=$#BUFFER
+  zle clear-screen
+}
+
+zle -N peco-select-console
+bindkey '^xc' peco-select-console
+```
+
+Press Ctrl-X C then you can select a port with interactive filtering.
