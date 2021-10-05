@@ -32,6 +32,16 @@ module Cow
     end
 
     def create_cache(_cache = CACHE_FILE)
+      dir_name = File.dirname(_cache)
+      if !File.exist?(dir_name)
+        puts 'Cache directory is not found. Creating...'
+        Dir.mkdir(dir_name)
+      else
+        if !File.directory?(dir_name)
+          raise 'Cache directory path is already found but it is not a directory!!!'
+        end
+      end
+
       File.write(_cache, Cow::Application::Cache.new.to_yaml)
     end
 
