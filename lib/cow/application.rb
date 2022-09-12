@@ -159,11 +159,11 @@ module Cow
     def cmd_delete(_hostname)
       raise ArgumentError unless _hostname.class == String
 
-
       load_cache
 
       unless @cache.find_server(_hostname)
         puts "#{_hostname} is not found!!"
+        return
       end
 
       puts "#{_hostname} will be deleted"
