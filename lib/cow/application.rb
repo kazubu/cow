@@ -21,6 +21,23 @@ module Cow
         @servers << _server
       end
 
+      def find_server(_hostname)
+        @servers.each do |server|
+          return server if server.hostname == _hostname
+        end
+        nil
+      end
+
+      def delete_server(_hostname)
+        @servers.each_with_index do |server, idx|
+          if server.hostname == _hostname
+            @servers.delete_at(idx)
+            return true
+          end
+        end
+        false
+      end
+
     end
 
     CACHE_FILE = '/var/cache/cow/cow.cache'.freeze
@@ -103,6 +120,8 @@ module Cow
       case command
       when 'add', 'a'
         cmd_add(option1, option2, option3)
+      when 'delete', 'd'
+        cmd_delete(option1)
       when 'connect', 'c'
         cmd_connect(option1)
       when 'find', 'f'
@@ -135,6 +154,23 @@ module Cow
       edit_cache do |cache|
         cache.add_server server
       end if server
+    end
+
+    def cmd_delete(_hostname)
+      raise ArgumentError unless _hostname.class == String
+
+
+      load_cache
+
+      unless @cache.find_server(_hostname)
+        puts "#{_hostname} is not found!!"
+      end
+
+      puts "#{_hostname} will be deleted"
+
+      edit_cache do |cache|
+        cache.delete_server _hostname
+      end
     end
 
     def cmd_connect(_portname)
@@ -224,6 +260,9 @@ Commands:
   add [hostname] [type] [snmp_community]
     Add new console server.
     available types: #{Cow::SERVER_TYPES.keys.join(' ')}
+
+  delete [hostname]
+    Delete existing console server.
 
   connect [portname]
     Connect to console port.
